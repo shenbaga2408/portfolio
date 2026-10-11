@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowUpRight, Sparkles, Send } from 'lucide-react';
+﻿import React, { useState, useEffect } from 'react';
+import { Menu, X, Send, Phone } from 'lucide-react';
 import { siteConfig } from '../data/portfolioData';
 
 interface NavbarProps {
@@ -14,9 +14,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [mobileMenuOpen]);
 
   const navLinks = [
     { label: 'Home', href: '#home', id: 'home' },
@@ -29,30 +38,30 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-[#0A1128]/90 backdrop-blur-md border-b border-white/10 shadow-lg py-3'
-          : 'bg-transparent py-5'
+        isScrolled || mobileMenuOpen
+          ? 'bg-[#0A1128]/95 backdrop-blur-md border-b border-white/10 shadow-lg py-3'
+          : 'bg-transparent py-4 sm:py-5'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Logo / Name */}
+          
+          {/* Brand / Logo */}
           <a
             href="#home"
-            className="flex items-center gap-3 group focus:outline-none"
+            className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none"
             aria-label="Shenbaga Devi C - Home"
+            onClick={() => setMobileMenuOpen(false)}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#FF6B6B] to-[#14B8A6] flex items-center justify-center text-white font-bold font-display shadow-md shadow-[#FF6B6B]/20 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#FF6B6B] to-[#14B8A6] flex items-center justify-center text-white font-bold font-display shadow-md shadow-[#FF6B6B]/20 group-hover:scale-105 transition-transform text-sm sm:text-base shrink-0">
               SD
             </div>
-            <div>
-              <span className={`text-lg font-bold font-display tracking-tight transition-colors ${
-                isScrolled ? 'text-white' : 'text-[#0A1128]'
-              }`}>
+            <div className="min-w-0">
+              <span className="text-base sm:text-lg font-bold font-display tracking-tight text-white sm:text-[#0A1128] block truncate">
                 {siteConfig.name}
               </span>
-              <span className="block text-xs text-[#14B8A6] font-medium tracking-wide">
-                Design & Digital Marketing
+              <span className="block text-[10px] sm:text-xs text-[#14B8A6] font-medium tracking-wide truncate">
+                Graphic Design &amp; Paid Ads
               </span>
             </div>
           </a>
@@ -79,8 +88,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             })}
           </nav>
 
-          {/* CTA & Mobile Toggle */}
-          <div className="flex items-center gap-3">
+          {/* Action CTAs */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Direct WhatsApp Callout on mobile */}
+            <a
+              href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Hi Shenbaga Devi, I saw your portfolio and would like to discuss a project.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex sm:hidden p-2 rounded-full bg-emerald-600 text-white shadow-sm hover:bg-emerald-500 transition-colors"
+              aria-label="Direct WhatsApp Message"
+            >
+              <Phone className="w-4 h-4" />
+            </a>
+
+            {/* Desktop Let's Talk CTA */}
             <a
               href="#contact"
               className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#FF6B6B] to-[#E64C4C] hover:from-[#E64C4C] hover:to-[#FF6B6B] text-white text-sm font-semibold shadow-md shadow-[#FF6B6B]/25 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
@@ -89,47 +110,59 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
               <span>Let's Talk</span>
             </a>
 
-            {/* Mobile menu button */}
+            {/* Mobile Hamburger Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className={`p-2 rounded-xl md:hidden transition-colors ${
-                isScrolled ? 'text-white hover:bg-white/10' : 'text-[#0A1128] hover:bg-black/5'
-              }`}
+              className="p-2 rounded-xl md:hidden text-white sm:text-[#0A1128] hover:bg-white/10 sm:hover:bg-black/5 transition-colors focus:outline-none"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white sm:text-[#0A1128]" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile dropdown */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0A1128]/95 backdrop-blur-xl border-b border-white/10 px-6 py-6 space-y-3 transition-all animate-in fade-in slide-in-from-top-2">
-          {navLinks.map((link) => (
+        <div className="md:hidden fixed inset-x-0 top-[61px] bottom-0 bg-[#0A1128]/98 backdrop-blur-2xl border-b border-white/10 px-6 py-6 overflow-y-auto flex flex-col justify-between animate-in fade-in duration-200 z-50">
+          <div className="space-y-2">
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-4 py-3.5 rounded-2xl text-base font-semibold transition-all ${
+                  activeSection === link.id
+                    ? 'bg-gradient-to-r from-[#FF6B6B] to-[#14B8A6] text-white shadow-lg'
+                    : 'text-gray-200 hover:bg-white/10'
+                }`}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          <div className="pt-6 border-t border-white/10 space-y-3 pb-8">
             <a
-              key={link.id}
-              href={link.href}
+              href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Hi Shenbaga Devi, I saw your portfolio and would like to discuss a project.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                activeSection === link.id
-                  ? 'bg-gradient-to-r from-[#FF6B6B] to-[#14B8A6] text-white font-semibold'
-                  : 'text-gray-200 hover:bg-white/10'
-              }`}
+              className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg"
             >
-              {link.label}
+              <Phone className="w-4 h-4" />
+              <span>Chat on WhatsApp ({siteConfig.contact.whatsappFormatted})</span>
             </a>
-          ))}
-          <div className="pt-2">
+
             <a
-              href="#contact"
+              href={`mailto:${siteConfig.contact.email}`}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#FF6B6B] text-white font-semibold shadow-lg text-sm"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-[#FF6B6B] text-white font-bold text-sm shadow-lg"
             >
               <Send className="w-4 h-4" />
-              <span>Contact Shenbaga Devi</span>
+              <span>Email: {siteConfig.contact.email}</span>
             </a>
           </div>
         </div>

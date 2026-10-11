@@ -78,10 +78,10 @@ export const siteConfig: SiteConfig = {
   ],
   contact: {
     // Configurable fields - Replace placeholders with actual credentials
-    email: "shenbagadevi.designs@gmail.com", // [Configurable: Replace with actual email]
-    whatsapp: "+919876543210", // [Configurable: Replace with actual WhatsApp number e.g. +919876543210]
-    whatsappFormatted: "+91 98765 43210", // Display format
-    phone: "+91 98765 43210", // [Configurable: Replace with actual phone]
+    email: "shenbaga2408@gmail.com", // [Configurable: Replace with actual email]
+    whatsapp: "+919677089420", // [Configurable: Replace with actual WhatsApp number e.g. +919677089420]
+    whatsappFormatted: "+91 96770 89420", // Display format
+    phone: "+91 96770 89420", // [Configurable: Replace with actual phone]
     instagram: "https://instagram.com/shenbaga_creative", // [Configurable: Replace with actual profile URL]
     instagramHandle: "@shenbaga_creative",
     linkedin: "https://linkedin.com/in/shenbaga-devi-c", // [Configurable: Optional profile URL]

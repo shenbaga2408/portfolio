@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @layer base {
   :root {
@@ -15,43 +15,66 @@
     --bg-cream-card: #FFFFFF;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     color: #0A1128;
     background-color: #FAF8F5;
     overflow-x: hidden;
+    width: 100%;
   }
 
   h1, h2, h3, h4, h5, h6, .font-display {
     font-family: 'Outfit', sans-serif;
   }
+
+  /* Prevent iOS automatic zoom on form input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 9px;
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-::-webkit-scrollbar-track {
-  background: #FAF8F5;
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 6px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+
+/* Custom scrollbar for desktop */
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FAF8F5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
 }
 
 /* Glassmorphism helpers */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .glass-dark {
-  background: rgba(10, 17, 40, 0.88);
+  background: rgba(10, 17, 40, 0.90);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -70,20 +93,20 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Animations */
+/* Floating animation */
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
 }
 
 .animate-float {
-  animation: float 5s ease-in-out infinite;
+  animation: float 4.5s ease-in-out infinite;
 }
 
 .animate-float-delayed {
-  animation: float 6s ease-in-out 2s infinite;
+  animation: float 5.5s ease-in-out 1.5s infinite;
 }

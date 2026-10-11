@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, TrendingUp, Building2, Calendar, Target, CheckCircle2, DollarSign, Users, MousePointerClick, ExternalLink } from 'lucide-react';
+﻿import React, { useEffect, useRef } from 'react';
+import { X, ChevronLeft, ChevronRight, TrendingUp, Building2, Calendar, Target, CheckCircle2 } from 'lucide-react';
 import { PaidCampaign } from '../types';
 
 interface CampaignModalProps {
@@ -19,6 +19,8 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
   currentIndex,
   totalCount,
 }) => {
+  const touchStartX = useRef<number | null>(null);
+
   useEffect(() => {
     if (!campaign) return;
 
@@ -37,6 +39,21 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
     };
   }, [campaign, onClose, onPrev, onNext]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) {
+      onNext();
+    } else if (diff < -50) {
+      onPrev();
+    }
+    touchStartX.current = null;
+  };
+
   if (!campaign) return null;
 
   return (
@@ -44,30 +61,30 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label={campaign.title}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/92 backdrop-blur-xl p-3 sm:p-6 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl p-0 sm:p-4 lg:p-6 animate-in fade-in duration-200"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
-      {/* Top Bar */}
-      <div className="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
-        <div className="pointer-events-auto bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white tracking-wider border border-white/10 flex items-center gap-2">
+      {/* Top Floating Bar for Mobile/Desktop */}
+      <div className="absolute top-3 left-3 right-3 z-50 flex items-center justify-between pointer-events-none">
+        <div className="pointer-events-auto bg-[#0A1128]/90 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold text-white tracking-wider border border-white/15 flex items-center gap-1.5 shadow-xl">
           <span>{currentIndex + 1} of {totalCount}</span>
           <span>•</span>
           <span className="text-[#14B8A6]">{campaign.platform}</span>
-          <span>•</span>
-          <span className="text-gray-300">{campaign.industry}</span>
         </div>
         <button
           onClick={onClose}
-          className="pointer-events-auto p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
+          className="pointer-events-auto p-2.5 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white transition-all border border-white/20 focus:outline-none shadow-xl"
           aria-label="Close campaign audit"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Navigation Buttons */}
+      {/* Desktop Navigation Side Arrows */}
       <button
         onClick={onPrev}
-        className="absolute left-3 sm:left-6 z-40 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all transform -translate-y-1/2 top-1/2 border border-white/10 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#14B8A6]"
+        className="hidden lg:flex absolute left-4 z-40 p-3.5 rounded-full bg-white/10 hover:bg-white/25 active:scale-90 text-white transition-all transform -translate-y-1/2 top-1/2 border border-white/15 shadow-2xl hover:scale-110 focus:outline-none"
         aria-label="Previous campaign"
       >
         <ChevronLeft className="w-6 h-6" />
@@ -75,7 +92,7 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
 
       <button
         onClick={onNext}
-        className="absolute right-3 sm:right-6 z-40 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all transform -translate-y-1/2 top-1/2 border border-white/10 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#14B8A6]"
+        className="hidden lg:flex absolute right-4 z-40 p-3.5 rounded-full bg-white/10 hover:bg-white/25 active:scale-90 text-white transition-all transform -translate-y-1/2 top-1/2 border border-white/15 shadow-2xl hover:scale-110 focus:outline-none"
         aria-label="Next campaign"
       >
         <ChevronRight className="w-6 h-6" />
@@ -83,159 +100,155 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
 
       {/* Main Modal Container */}
       <div
-        className="w-full max-w-6xl max-h-[92vh] bg-[#0A1128] rounded-2xl border border-white/10 text-white overflow-hidden flex flex-col shadow-2xl"
+        className="w-full h-full sm:h-auto sm:max-h-[92vh] max-w-6xl bg-[#0A1128] rounded-none sm:rounded-2xl border-0 sm:border border-white/15 text-white overflow-hidden flex flex-col shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-6 border-b border-white/10 flex flex-wrap items-center justify-between gap-4 bg-[#0E172E]">
+        <div className="pt-14 sm:pt-6 p-4 sm:p-6 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 bg-[#0E172E] shrink-0">
           <div>
-            <div className="flex items-center gap-3 mb-1">
-              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className={`text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
                 campaign.platform === 'Google Ads'
                   ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
                   : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
               }`}>
                 {campaign.platform}
               </span>
-              <span className="text-xs text-gray-400 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-[#14B8A6]" />
-                {campaign.client}
-              </span>
-              <span className="text-xs text-gray-400 flex items-center gap-1.5 hidden sm:inline-flex">
-                <Calendar className="w-3.5 h-3.5 text-gray-500" />
-                {campaign.dateRange}
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <Building2 className="w-3 h-3 text-[#14B8A6]" />
+                <span className="truncate max-w-[150px] sm:max-w-none">{campaign.client}</span>
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold font-display text-white">
+            <h2 className="text-base sm:text-xl font-bold font-display text-white leading-snug">
               {campaign.title}
             </h2>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>Verified Client Dashboard</span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] sm:text-xs font-semibold">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Verified Account Data</span>
             </span>
           </div>
         </div>
 
-        {/* Modal Body: Two Columns (Screenshot & Metrics) */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Modal Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 pb-20 sm:pb-6">
           
-          {/* Original Screenshot Section */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-gray-400">
+          {/* Original Screenshot Section with pinch/scroll hint */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] text-gray-400">
               <span className="font-semibold uppercase tracking-wider flex items-center gap-1.5 text-gray-300">
-                <TrendingUp className="w-4 h-4 text-[#FF6B6B]" />
-                Original Dashboard Screenshot from Presentation
+                <TrendingUp className="w-3.5 h-3.5 text-[#FF6B6B]" />
+                Original Dashboard Screenshot
               </span>
-              <span className="text-gray-500">Unmodified source screenshot</span>
+              <span className="text-gray-500 text-[10px] hidden sm:inline">Unmodified client screenshot</span>
             </div>
-            <div className="relative rounded-xl overflow-hidden border border-white/15 bg-black/60 shadow-inner max-h-[50vh] flex items-center justify-center p-2">
+            <div className="relative rounded-xl overflow-x-auto border border-white/15 bg-black/70 shadow-inner max-h-[38vh] sm:max-h-[50vh] flex items-center justify-center p-1.5 sm:p-2">
               <img
                 src={campaign.image}
                 alt={`${campaign.title} dashboard screenshot`}
-                className="max-h-[46vh] w-auto max-w-full object-contain rounded-lg"
+                className="max-h-[35vh] sm:max-h-[46vh] w-auto max-w-full object-contain rounded-lg"
               />
             </div>
           </div>
 
           {/* Strategy Summary */}
-          <div className="bg-white/5 rounded-xl p-5 border border-white/10 space-y-2">
-            <div className="text-xs font-bold uppercase tracking-wider text-[#14B8A6] flex items-center gap-1.5">
-              <Target className="w-4 h-4" />
-              <span>Campaign Strategy & Objective</span>
+          <div className="bg-white/5 rounded-xl p-4 sm:p-5 border border-white/10 space-y-1.5">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#14B8A6] flex items-center gap-1.5">
+              <Target className="w-3.5 h-3.5" />
+              <span>Campaign Strategy &amp; Objective</span>
             </div>
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-200 leading-relaxed">
               {campaign.summary}
             </p>
           </div>
 
-          {/* Numerical Audit Table / Cards */}
+          {/* Numerical Audit Table */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
-              Performance Metrics (Read Directly from Ad Account)
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2.5">
+              Key Account Metrics
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-              <div className="bg-[#132238] p-4 rounded-xl border border-white/10">
-                <span className="text-[11px] text-gray-400 block font-medium">Primary Results</span>
-                <span className="text-lg font-extrabold text-[#14B8A6] font-display mt-1 block">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
+              <div className="bg-[#132238] p-3 sm:p-4 rounded-xl border border-white/10">
+                <span className="text-[10px] text-gray-400 block font-medium">Primary Results</span>
+                <span className="text-base sm:text-lg font-extrabold text-[#14B8A6] font-display mt-0.5 block truncate">
                   {campaign.primaryResult}
                 </span>
-                <span className="text-[10px] text-gray-400 mt-0.5 block">{campaign.primaryResultLabel}</span>
+                <span className="text-[9px] text-gray-400 mt-0.5 block truncate">{campaign.primaryResultLabel}</span>
               </div>
 
-              <div className="bg-[#132238] p-4 rounded-xl border border-white/10">
-                <span className="text-[11px] text-gray-400 block font-medium">Cost Per Result</span>
-                <span className="text-lg font-extrabold text-[#FF6B6B] font-display mt-1 block">
+              <div className="bg-[#132238] p-3 sm:p-4 rounded-xl border border-white/10">
+                <span className="text-[10px] text-gray-400 block font-medium">Cost Per Result</span>
+                <span className="text-base sm:text-lg font-extrabold text-[#FF6B6B] font-display mt-0.5 block truncate">
                   {campaign.costPerResult}
                 </span>
-                <span className="text-[10px] text-gray-400 mt-0.5 block">Calculated efficiency</span>
+                <span className="text-[9px] text-gray-400 mt-0.5 block truncate">Acquisition cost</span>
               </div>
 
-              <div className="bg-[#132238] p-4 rounded-xl border border-white/10">
-                <span className="text-[11px] text-gray-400 block font-medium">Amount Spent</span>
-                <span className="text-lg font-extrabold text-white font-display mt-1 block">
+              <div className="bg-[#132238] p-3 sm:p-4 rounded-xl border border-white/10">
+                <span className="text-[10px] text-gray-400 block font-medium">Amount Spent</span>
+                <span className="text-base sm:text-lg font-extrabold text-white font-display mt-0.5 block truncate">
                   {campaign.amountSpent}
                 </span>
-                <span className="text-[10px] text-gray-400 mt-0.5 block">Ad spend deployed</span>
+                <span className="text-[9px] text-gray-400 mt-0.5 block truncate">Ad budget</span>
               </div>
 
-              <div className="bg-[#132238] p-4 rounded-xl border border-white/10">
-                <span className="text-[11px] text-gray-400 block font-medium">Impressions</span>
-                <span className="text-lg font-extrabold text-white font-display mt-1 block">
+              <div className="bg-[#132238] p-3 sm:p-4 rounded-xl border border-white/10">
+                <span className="text-[10px] text-gray-400 block font-medium">Impressions</span>
+                <span className="text-base sm:text-lg font-extrabold text-white font-display mt-0.5 block truncate">
                   {campaign.impressions}
                 </span>
-                <span className="text-[10px] text-gray-400 mt-0.5 block">Ad views served</span>
+                <span className="text-[9px] text-gray-400 mt-0.5 block truncate">Ad views served</span>
               </div>
 
               {campaign.reach && (
-                <div className="bg-[#132238] p-4 rounded-xl border border-white/10">
-                  <span className="text-[11px] text-gray-400 block font-medium">Unique Reach</span>
-                  <span className="text-lg font-extrabold text-white font-display mt-1 block">
+                <div className="bg-[#132238] p-3 sm:p-4 rounded-xl border border-white/10">
+                  <span className="text-[10px] text-gray-400 block font-medium">Unique Reach</span>
+                  <span className="text-base sm:text-lg font-extrabold text-white font-display mt-0.5 block truncate">
                     {campaign.reach}
                   </span>
-                  <span className="text-[10px] text-gray-400 mt-0.5 block">Unique users reached</span>
+                  <span className="text-[9px] text-gray-400 mt-0.5 block truncate">Unique audience</span>
                 </div>
               )}
 
               {campaign.ctr && (
-                <div className="bg-[#132238] p-4 rounded-xl border border-white/10">
-                  <span className="text-[11px] text-gray-400 block font-medium">Click-Through (CTR)</span>
-                  <span className="text-lg font-extrabold text-emerald-400 font-display mt-1 block">
+                <div className="bg-[#132238] p-3 sm:p-4 rounded-xl border border-white/10">
+                  <span className="text-[10px] text-gray-400 block font-medium">Click-Through (CTR)</span>
+                  <span className="text-base sm:text-lg font-extrabold text-emerald-400 font-display mt-0.5 block truncate">
                     {campaign.ctr}
                   </span>
-                  <span className="text-[10px] text-gray-400 mt-0.5 block">High engagement rate</span>
+                  <span className="text-[9px] text-gray-400 mt-0.5 block truncate">High engagement</span>
                 </div>
               )}
 
               {campaign.conversionRate && (
-                <div className="bg-[#132238] p-4 rounded-xl border border-white/10">
-                  <span className="text-[11px] text-gray-400 block font-medium">Conversion Rate</span>
-                  <span className="text-lg font-extrabold text-amber-300 font-display mt-1 block">
+                <div className="bg-[#132238] p-3 sm:p-4 rounded-xl border border-white/10">
+                  <span className="text-[10px] text-gray-400 block font-medium">Conversion Rate</span>
+                  <span className="text-base sm:text-lg font-extrabold text-amber-300 font-display mt-0.5 block truncate">
                     {campaign.conversionRate}
                   </span>
-                  <span className="text-[10px] text-gray-400 mt-0.5 block">Click to enquiry</span>
+                  <span className="text-[9px] text-gray-400 mt-0.5 block truncate">Lead conversion</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Breakdown List */}
-          <div className="pt-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-              Individual Ad Set & Campaign Breakdown
+          <div>
+            <h4 className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">
+              Ad Set Breakdown
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {campaign.keyMetrics.map((km, idx) => (
                 <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
-                  <div>
-                    <span className="text-xs font-bold text-gray-200 block">{km.label}</span>
+                  <div className="min-w-0 pr-2">
+                    <span className="text-xs font-bold text-gray-200 block truncate">{km.label}</span>
                     {km.subtext && (
-                      <span className="text-[11px] text-gray-400">{km.subtext}</span>
+                      <span className="text-[10px] text-gray-400 truncate block">{km.subtext}</span>
                     )}
                   </div>
-                  <span className="text-sm font-extrabold text-[#14B8A6] font-display ml-3 shrink-0">
+                  <span className="text-xs sm:text-sm font-extrabold text-[#14B8A6] font-display shrink-0">
                     {km.value}
                   </span>
                 </div>
@@ -245,12 +258,33 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
 
         </div>
 
-        {/* Modal Footer */}
-        <div className="p-4 border-t border-white/10 bg-[#0E172E] flex items-center justify-between text-xs text-gray-400">
-          <span>Shenbaga Devi C • Paid Digital Marketing Portfolio</span>
+        {/* Mobile Fixed Bottom Navigation Bar */}
+        <div className="p-3 sm:p-4 border-t border-white/10 bg-[#0E172E] flex items-center justify-between text-xs text-gray-400 shrink-0">
+          <div className="flex items-center gap-2 w-full justify-between sm:w-auto">
+            <button
+              onClick={onPrev}
+              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/10 text-white font-semibold text-xs active:scale-95"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span>Previous</span>
+            </button>
+
+            <span className="text-[11px] text-gray-300 sm:hidden">
+              {currentIndex + 1} of {totalCount}
+            </span>
+
+            <button
+              onClick={onNext}
+              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-[#14B8A6] text-white font-semibold text-xs active:scale-95 shadow-md"
+            >
+              <span>Next</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-colors"
+            className="hidden sm:inline-flex px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-colors"
           >
             Close Audit View
           </button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { GraphicPortfolio } from './components/GraphicPortfolio';
@@ -6,6 +6,7 @@ import { PaidCampaigns } from './components/PaidCampaigns';
 import { About } from './components/About';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
+import { MobileActionBar } from './components/MobileActionBar';
 
 export const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
@@ -33,9 +34,9 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#0A1128] flex flex-col">
+    <div className="min-h-screen bg-[#FAF8F5] text-[#0A1128] flex flex-col selection:bg-[#FF6B6B] selection:text-white">
       <Navbar activeSection={activeSection} />
-      <main className="flex-1">
+      <main className="flex-1 pb-16 md:pb-0">
         <Hero />
         <GraphicPortfolio />
         <PaidCampaigns />
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
         <Contact />
       </main>
       <Footer />
+      <MobileActionBar />
     </div>
   );
 };
